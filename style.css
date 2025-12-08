@@ -1,0 +1,296 @@
+/* --- Variáveis CSS (Figma Token Ready) --- */
+:root {
+    --bg-dark: #1a2a23;
+    --bg-card: #1f3d30;
+    --bg-input: #274c3a;
+    --primary: #74eeab;
+    --primary-hover: #5ec78d;
+    --text-light: #e0e0e0;
+    --text-dim: #a0c2ad;
+    --border-color: rgba(116, 238, 171, 0.2);
+    --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    margin: 0;
+    box-sizing: border-box;
+    background-image: radial-gradient(rgba(48, 115, 84, 0.1) 1px, transparent 1px);
+    background-size: 15px 15px;
+}
+
+/* --- Layout Managers --- */
+.container, .dashboard {
+    width: 100%;
+    max-width: 1200px;
+    display: none; /* Escondido por padrão */
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.container.active, .dashboard.active {
+    display: grid; /* Ou block dependendo do layout */
+    opacity: 1;
+}
+
+.dashboard.active {
+    display: grid;
+    grid-template-areas:
+        "header header"
+        "main sidebar";
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+/* --- Form Styles --- */
+.form-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-header h1 {
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.form-group h3 {
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.input-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.input-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-box label {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    color: var(--text-light);
+}
+
+.input-box input {
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 12px;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.3s;
+}
+
+.input-box input:focus {
+    border-color: var(--primary);
+}
+
+.hint {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: 4px;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--bg-dark);
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.btn-back {
+    grid-area: header;
+    justify-self: start;
+    background: none;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* --- Dashboard Components (Reused & Refined) --- */
+.card {
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    border: 1px solid var(--border-color);
+}
+
+.header-stats {
+    grid-area: header;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-top: 40px; /* Espaço para botão voltar */
+}
+
+.stat-item {
+    background-color: var(--bg-input);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.stat-item h3 {
+    color: var(--primary);
+    font-size: 1.5rem;
+    margin: 5px 0 0 0;
+}
+
+.main-panel {
+    grid-area: main;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    min-height: 400px;
+}
+
+.dial {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, #274c3a 50%, #1f3d30 75%);
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 30px rgba(116, 238, 171, 0.3);
+}
+
+.dial-center {
+    width: 100px;
+    height: 100px;
+    background-color: var(--bg-dark);
+    border-radius: 50%;
+    border: 4px solid var(--primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary);
+    z-index: 2;
+}
+
+.dial-item {
+    position: absolute;
+    text-align: center;
+}
+.dial-item p { margin: 0; font-size: 0.8rem; color: var(--text-dim); }
+.dial-item h3 { margin: 0; color: var(--primary); }
+
+/* Posicionamento do Dial */
+#dial-coletado-mes { top: 20px; }
+#dial-triado-mes { bottom: 20px; }
+#dial-coletado-dia { left: 10px; }
+#dial-equipe { right: 10px; }
+
+
+.sidebar {
+    grid-area: sidebar;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.team-item {
+    background-color: var(--bg-input);
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.team-item h5 { margin: 0; color: #fff; font-size: 1.1rem; }
+.team-item p { margin: 0; font-size: 0.75rem; color: var(--text-dim); }
+
+.total-row {
+    grid-column: 1 / -1;
+    background-color: #2f5c47;
+    margin-top: 5px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--bg-dark);
+    padding-bottom: 5px;
+}
+
+/* Spinner */
+.spinner-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(26, 42, 35, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
+}
+.spinner-overlay.show { visibility: visible; opacity: 1; }
+
+.pie-spinner {
+    width: 80px; height: 80px;
+    animation: spin 1s linear infinite;
+    color: var(--primary);
+    font-size: 3rem;
+    display: flex; align-items: center; justify-content: center;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }

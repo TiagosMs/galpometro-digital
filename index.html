@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galpômetro Digital | Planeamento de Resíduos</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Ícones -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Banco de Dados (Supabase) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- TELA 1: FORMULÁRIO DE ENTRADA -->
+    <section id="input-section" class="container active">
+        <div class="form-wrapper card">
+            <div class="form-header">
+                <h1><i class="ph ph-plant"></i> Novo Cenário</h1>
+                <p>Preencha os 4 parâmetros principais de entrada.</p>
+            </div>
+
+            <form id="simulation-form">
+                <div class="form-group">
+                    <h3><i class="ph ph-sliders-horizontal"></i> Parâmetros do Projeto</h3>
+                    <div class="input-grid">
+                        
+                        <!-- 1. População -->
+                        <div class="input-box">
+                            <label>População Total</label>
+                            <input type="number" id="population" min="1000" placeholder="Ex: 50000" required>
+                            <span class="hint">Habitantes da cidade</span>
+                        </div>
+
+                        <!-- 2. Abrangência -->
+                        <div class="input-box">
+                            <label>Abrangência da Coleta (%)</label>
+                            <input type="number" id="abrangencia" min="1" max="100" value="80" required>
+                            <span class="hint">% da cidade atendida</span>
+                        </div>
+
+                        <!-- 3. Tipo de Camião -->
+                        <div class="input-box">
+                            <label>Tipo de Camião</label>
+                            <select id="truckType">
+                                <option value="Compactador">Compactador (15m³)</option>
+                                <option value="Bau">Camião Baú (24m³)</option>
+                                <option value="Gaiola">Camião Gaiola (12m³)</option>
+                            </select>
+                            <span class="hint">Define volume e densidade</span>
+                        </div>
+
+                        <!-- 4. Capacidade da Prensa (NOVO) -->
+                        <div class="input-box">
+                            <label>Capacidade da Prensa</label>
+                            <input type="number" id="pressCapacity" min="1" max="50" step="0.5" value="8" required>
+                            <span class="hint">Toneladas/dia por máquina</span>
+                        </div>
+
+                    </div>
+                    
+                    <!-- Informação sobre os pré-definidos -->
+                    <div style="margin-top: 20px; font-size: 0.8rem; color: #a0c2ad; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px;">
+                        <i class="ph ph-info"></i> <strong>Parâmetros Pré-definidos (Automáticos):</strong><br>
+                        Geração: 0.95 kg/hab • Índice de Coleta: 10% • Dias Úteis: 22 • Viagens: 2
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="ph ph-calculator"></i> Calcular Cenário
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- TELA 2: DASHBOARD (Saída) -->
+    <section id="dashboard-section" class="dashboard hidden">
+        <button id="btn-back" class="btn-back"><i class="ph ph-arrow-left"></i> Novo Cálculo</button>
+
+        <header class="header-stats">
+             <div class="stat-item">
+                <p><i class="ph ph-factory"></i> Produção Mês</p>
+                <h3 id="header-coletado">0t</h3>
+            </div>
+            <div class="stat-item">
+                <p><i class="ph ph-users-three"></i> Equipa Total</p>
+                <h3 id="header-equipe">0</h3>
+            </div>
+            <div class="stat-item">
+                <p><i class="ph ph-recycle"></i> Triado Líquido</p>
+                <h3 id="header-triado">0t</h3>
+            </div>
+            <div class="stat-item">
+                <p><i class="ph ph-truck"></i> Frota</p>
+                <h3 id="header-frota">0</h3>
+            </div>
+        </header>
+
+        <main class="main-panel card">
+            <div class="dial">
+                <div class="dial-center" id="dial-total-ton">0t</div>
+                
+                <div class="dial-item" id="dial-coletado-mes">
+                    <p>Coletado/Mês</p> <h3 id="dial-val-coletado-mes">0t</h3>
+                </div>
+                <div class="dial-item" id="dial-triado-mes">
+                    <p>Eficiência</p> <h3 id="dial-val-eficiencia">0%</h3>
+                </div>
+                <div class="dial-item" id="dial-coletado-dia">
+                    <p>Coletado/Dia</p> <h3 id="dial-val-coletado-dia">0t</h3>
+                </div>
+                <div class="dial-item" id="dial-equipe">
+                    <p>Equipa</p> <h3 id="dial-val-equipe">0</h3>
+                </div>
+            </div>
+        </main>
+
+        <aside class="sidebar">
+            <div class="card team-stats">
+                <h4><i class="ph ph-users"></i> Quadro de Pessoal</h4>
+                <div id="team-list-container" class="team-grid"></div>
+                <div class="team-item total-row">
+                    <h5 id="team-total">0</h5> <p>TOTAL</p>
+                </div>
+            </div>
+
+            <div class="card infra-stats">
+                <h4><i class="ph ph-wrench"></i> Equipamentos</h4>
+                 <div class="stat-row">
+                    <span>Camiões</span> <span id="res-caminhoes">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Prensas</span> <span id="res-prensas">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Empilhadoras</span> <span id="res-empilhadeiras">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Balanças</span> <span id="res-balancas">0</span>
+                </div>
+            </div>
+        </aside>
+    </section>
+
+    <!-- Overlay de Carregamento -->
+    <div class="spinner-overlay" id="spinnerOverlay">
+        <div class="pie-spinner">
+            <i class="ph ph-recycle recycle-symbol"></i>
+        </div>
+        <p style="margin-top: 20px; color: #fff;">A calcular requisitos...</p>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
