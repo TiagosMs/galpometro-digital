@@ -50,7 +50,7 @@
                             <span class="hint">Define volume e densidade</span>
                         </div>
 
-                        <!-- 4. Capacidade da Prensa (NOVO) -->
+                        <!-- 4. Capacidade da Prensa -->
                         <div class="input-box">
                             <label>Capacidade da Prensa</label>
                             <input type="number" id="pressCapacity" min="1" max="50" step="0.5" value="8" required>
@@ -62,7 +62,7 @@
                     <!-- Informação sobre os pré-definidos -->
                     <div style="margin-top: 20px; font-size: 0.8rem; color: #a0c2ad; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px;">
                         <i class="ph ph-info"></i> <strong>Parâmetros Pré-definidos (Automáticos):</strong><br>
-                        Geração: 0.95 kg/hab • Índice de Coleta: 10% • Dias Úteis: 22 • Viagens: 2
+                        Geração: 0.95 kg/hab • Índice de Coleta: 10% • Dias Úteis: 22 • Viagens: 1
                     </div>
                 </div>
                 
@@ -84,9 +84,10 @@
                 <p><i class="ph ph-factory"></i> Produção Mês</p>
                 <h3 id="header-coletado">0t</h3>
             </div>
+            <!-- MUDANÇA NO CABEÇALHO: Agora mostra População -->
             <div class="stat-item">
-                <p><i class="ph ph-users-three"></i> Equipa Total</p>
-                <h3 id="header-equipe">0</h3>
+                <p><i class="ph ph-users"></i> População (Abr.)</p>
+                <h3 id="header-pop-abr">0</h3>
             </div>
             <div class="stat-item">
                 <p><i class="ph ph-recycle"></i> Triado Líquido</p>
@@ -111,8 +112,10 @@
                 <div class="dial-item" id="dial-coletado-dia">
                     <p>Coletado/Dia</p> <h3 id="dial-val-coletado-dia">0t</h3>
                 </div>
+                
+                <!-- MUDANÇA NA ROLETA: Volta a mostrar Equipe -->
                 <div class="dial-item" id="dial-equipe">
-                    <p>Equipa</p> <h3 id="dial-val-equipe">0</h3>
+                    <p>Equipe Total</p> <h3 id="dial-val-equipe">0</h3>
                 </div>
             </div>
         </main>

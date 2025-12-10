@@ -7,23 +7,18 @@ const dbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 // --- 2. MOTOR DE CÁLCULO ---
 class CalculatorEngine {
     constructor() {
-        // Valores fixos de pesquisa/mercado (NÃO SÃO INPUTS)
         this.DB_SIMULATION = {
-            GENERATION_PER_CAPITA: 0.95, // kg/hab/dia
-            CATCH_RATE: 10,              // % (Adesão)
-            WORK_DAYS: 22,               // Dias úteis
-            TRIPS_PER_DAY: 2,            // Viagens padrão
-            
-            SORTING_CAPACITY_PER_PERSON: 1.0, // 1t/pessoa
-            REJECT_RATE: 0.20,                // 20% rejeito
-            
-            // A capacidade da prensa saiu daqui e virou INPUT do usuário
-            PRESS_RATIO_PERSON: 4.0,    // 1 Prensista para 4t
-            
-            HELPERS_PER_TRUCK: 2,
-            ADMIN_RATIO: 10,
-            DISPLACEMENT_RATIO: 5,
-            FORKLIFT_RATIO: 25
+            GENERATION_PER_CAPITA: 0.95, 
+            CATCH_RATE: 10,              
+            WORK_DAYS: 22,               
+            TRIPS_PER_DAY: 1, // Corrigido para 1 viagem conforme solicitado           
+            SORTING_CAPACITY_PER_PERSON: 0.19, 
+            REJECT_RATE: 0.15, 
+            PRESS_RATIO_PERSON: 1.5, 
+            HELPERS_PER_TRUCK: 2,       
+            ADMIN_RATIO: 15, // MUDANÇA: Agora é 1 admin a cada 15 operacionais           
+            DISPLACEMENT_RATIO: 3, 
+            FORKLIFT_RATIO: 15     
         };
 
         this.TRUCK_SPECS = {
@@ -52,18 +47,15 @@ class CalculatorEngine {
         const dailyTriagemMetaTon = dailyCollectionKg / 1000;
         const sortersNeeded = Math.ceil(dailyTriagemMetaTon / D.SORTING_CAPACITY_PER_PERSON);
 
-        // --- 4. PRENSAGEM (Usa o Input do Usuário agora) ---
+        // --- 4. PRENSAGEM ---
         const materialToPressTon = dailyTriagemMetaTon * (1 - D.REJECT_RATE);
-        
-        // AQUI: Usa inputs.pressCapacity em vez do valor fixo
         const pressesNeeded = Math.ceil(materialToPressTon / inputs.pressCapacity);
-        
         const pressOperators = Math.ceil(materialToPressTon / D.PRESS_RATIO_PERSON);
 
         // --- 5. APOIO ---
         const drivers = trucksCount;
         const helpers = Math.ceil(trucksCount * D.HELPERS_PER_TRUCK); 
-        const forkliftOperators = Math.max(1, Math.ceil(materialToPressTon / D.FORKLIFT_RATIO));
+        const forkliftOperators = materialToPressTon > 0.5 ? Math.max(1, Math.ceil(materialToPressTon / D.FORKLIFT_RATIO)) : 0;
         const displacement = Math.ceil(sortersNeeded / D.DISPLACEMENT_RATIO);
 
         // --- 6. GESTÃO ---
@@ -71,6 +63,10 @@ class CalculatorEngine {
         const admins = Math.ceil(operationalStaff / D.ADMIN_RATIO);
 
         return {
+            inputs: {
+                population: inputs.population,
+                abrangencia: inputs.abrangencia
+            },
             defaultsUsed: {
                 generation: D.GENERATION_PER_CAPITA,
                 catchRate: D.CATCH_RATE,
@@ -96,7 +92,7 @@ class CalculatorEngine {
             infrastructure: {
                 trucks: trucksCount,
                 presses: Math.max(1, pressesNeeded),
-                scales: monthlyCollectionTon > 50 ? 2 : 1,
+                scales: monthlyCollectionTon > 30 ? 1 : 0,
                 forklift: forkliftOperators
             }
         };
@@ -138,19 +134,16 @@ const UI = {
                 .from('cenarios')
                 .insert([{
                     nome_projeto: `Simulação ${new Date().toLocaleTimeString()}`,
-                    // Inputs do Usuário (4 entradas)
                     populacao: inputs.population,
                     abrangencia: inputs.abrangencia,
                     tipo_caminhao: inputs.truckType,
-                    capacidade_prensa_dia: inputs.pressCapacity, // NOVO CAMPO
+                    capacidade_prensa_dia: inputs.pressCapacity,
                     
-                    // Valores Internos usados
                     taxa_captura: used.catchRate,
                     dias_trabalhados_mes: used.workDays,
                     vol_capacidade_caminhao: used.truckVol,
                     viagens_caminhao_dia: used.trips,
                     
-                    // Resultados
                     coleta_total_mes: results.production.monthlyCollection,
                     total_equipe: results.staff.total,
                     taxa_eficiencia: results.production.efficiency
@@ -175,22 +168,17 @@ const UI = {
             alert(`Cenário salvo! ID: ${cenario.id}`);
 
         } catch (error) {
-            console.error("Erro ao salvar:", error);
-            if (error.message.includes('column "capacidade_prensa_dia" of relation "cenarios" does not exist')) {
-                 alert("Erro: Rode o comando SQL no Supabase para criar a coluna da prensa.");
-            } else {
-                alert("Erro ao salvar: " + error.message);
-            }
+            console.error("Erro:", error);
+            alert("Erro ao salvar: " + error.message);
         }
     },
 
     handleSimulation() {
-        // Captura as 4 ENTRADAS EXIGIDAS
         const inputs = {
             population: parseInt(document.getElementById('population').value),
             abrangencia: parseFloat(document.getElementById('abrangencia').value),
             truckType: document.getElementById('truckType').value,
-            pressCapacity: parseFloat(document.getElementById('pressCapacity').value) // NOVO
+            pressCapacity: parseFloat(document.getElementById('pressCapacity').value)
         };
 
         this.elements.spinner.classList.add('show');
@@ -206,7 +194,11 @@ const UI = {
 
     renderDashboard(data) {
         document.getElementById('header-coletado').innerText = `${data.production.monthlyCollection.toFixed(0)}t`;
-        document.getElementById('header-equipe').innerText = data.staff.total;
+        
+        // MUDANÇA: Exibe População no Header
+        const popFormatada = data.inputs.population.toLocaleString('pt-BR');
+        document.getElementById('header-pop-abr').innerText = `${popFormatada} (${data.inputs.abrangencia}%)`;
+        
         document.getElementById('header-triado').innerText = `${(data.production.monthlyCollection * (data.production.efficiency/100)).toFixed(0)}t`;
         document.getElementById('header-frota').innerText = data.infrastructure.trucks;
 
@@ -214,6 +206,8 @@ const UI = {
         document.getElementById('dial-val-coletado-mes').innerText = `${data.production.monthlyCollection.toFixed(1)}t`;
         document.getElementById('dial-val-eficiencia').innerText = `${data.production.efficiency.toFixed(0)}%`;
         document.getElementById('dial-val-coletado-dia').innerText = `${data.production.dailyCollection.toFixed(2)}t`;
+        
+        // MUDANÇA: Exibe Equipe na Roleta
         document.getElementById('dial-val-equipe').innerText = data.staff.total;
 
         const teamMap = [
