@@ -11,12 +11,12 @@ class CalculatorEngine {
             GENERATION_PER_CAPITA: 0.95, 
             CATCH_RATE: 10,              
             WORK_DAYS: 22,               
-            TRIPS_PER_DAY: 1, // Corrigido para 1 viagem conforme solicitado           
+            TRIPS_PER_DAY: 1,        
             SORTING_CAPACITY_PER_PERSON: 0.19, 
             REJECT_RATE: 0.15, 
             PRESS_RATIO_PERSON: 1.5, 
             HELPERS_PER_TRUCK: 2,       
-            ADMIN_RATIO: 15, // MUDANÇA: Agora é 1 admin a cada 15 operacionais           
+            ADMIN_RATIO: 15,        
             DISPLACEMENT_RATIO: 3, 
             FORKLIFT_RATIO: 15     
         };
