@@ -1,31 +1,34 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galpômetro Digital | Planejamento de Resíduos</title>
     <link rel="stylesheet" href="style.css">
+
     <!-- Ícones -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
     <!-- Banco de Dados (Supabase) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+
 <body>
 
     <!-- TELA 1: FORMULÁRIO DE ENTRADA -->
     <section id="input-section" class="container active">
         <div class="form-wrapper card">
             <div class="form-header">
-                <h1><i class="ph ph-plant"></i> Novo Cenário</h1>
-                <p>Selecione a cidade.</p>
+                <h1><i class="ph ph-plant" style="color: var(--primary);"></i> Galpômetro Digital</h1>
+                <p>Simule cenários operacionais de reciclagem com dados reais.</p>
             </div>
 
             <form id="simulation-form">
                 <div class="form-group">
                     <h3><i class="ph ph-map-pin"></i> Localização</h3>
-                    
-                    <!-- Seleção de Estado e Cidade (IBGE) -->
-                    <div class="input-grid" style="margin-bottom: 20px; border-bottom: 1px solid rgba(116, 238, 171, 0.1); padding-bottom: 20px;">
+
+                    <div class="input-grid">
                         <div class="input-box">
                             <label>Estado (UF)</label>
                             <select id="ufSelect">
@@ -39,22 +42,23 @@
                             </select>
                         </div>
                     </div>
+                </div>
 
+                <div class="form-group">
                     <h3><i class="ph ph-sliders-horizontal"></i> Parâmetros Operacionais</h3>
                     <div class="input-grid">
-                        
+
                         <!-- 1. População (Automático via IBGE) -->
                         <div class="input-box">
-                            <label>População Total</label>
-                            <input type="number" id="population" min="1000" placeholder="Aguardando cidade..." required>
-                            <span class="hint">Habitantes (Censo IBGE 2022)</span>
+                            <label>População (Censo 2022)</label>
+                            <input type="number" id="population" min="1000" placeholder="Aguardando cidade..." required
+                                readonly style="opacity: 0.7; cursor: not-allowed;">
                         </div>
 
                         <!-- 2. Abrangência -->
                         <div class="input-box">
                             <label>Abrangência da Coleta (%)</label>
                             <input type="number" id="abrangencia" min="1" max="100" value="80" required>
-                            <span class="hint">% da cidade atendida</span>
                         </div>
 
                         <!-- 3. Tipo de Caminhão -->
@@ -65,17 +69,20 @@
                                 <option value="Bau">Caminhão Baú (24m³)</option>
                                 <option value="Gaiola">Caminhão Gaiola (12m³)</option>
                             </select>
-                            <span class="hint">Define volume e densidade</span>
                         </div>
 
                     </div>
-                    
-                    <div style="margin-top: 20px; font-size: 0.8rem; color: #a0c2ad; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px;">
-                        <i class="ph ph-info"></i> <strong>Padrões do Sistema:</strong><br>
-                        Geração: 0.95 kg/hab • Índice de Coleta: 10% • Dias Úteis: 22 • Viagens: 1
+
+                    <div
+                        style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 10px;">
+                        <i class="ph ph-info" style="font-size: 1.2rem; color: var(--primary);"></i>
+                        <div>
+                            <strong>Padrões do Sistema:</strong><br>
+                            Geração: 0.95 kg/hab • Índice de Coleta: 10% • Dias Úteis: 22
+                        </div>
                     </div>
                 </div>
-                
+
                 <div class="form-actions">
                     <button type="submit" class="btn-primary">
                         <i class="ph ph-calculator"></i> Calcular Cenário
@@ -90,13 +97,12 @@
         <button id="btn-back" class="btn-back"><i class="ph ph-arrow-left"></i> Novo Cálculo</button>
 
         <header class="header-stats">
-             <div class="stat-item">
-                <p><i class="ph ph-factory"></i> Produção Mês</p>
+            <div class="stat-item">
+                <p><i class="ph ph-factory"></i> Produção Mensal</p>
                 <h3 id="header-coletado">0t</h3>
             </div>
-            <!-- População no Header -->
             <div class="stat-item">
-                <p><i class="ph ph-users"></i> População (Abr.)</p>
+                <p><i class="ph ph-users"></i> População Atendida</p>
                 <h3 id="header-pop-abr">0</h3>
             </div>
             <div class="stat-item">
@@ -104,7 +110,7 @@
                 <h3 id="header-triado">0t</h3>
             </div>
             <div class="stat-item">
-                <p><i class="ph ph-truck"></i> Frota</p>
+                <p><i class="ph ph-truck"></i> Frota Estimada</p>
                 <h3 id="header-frota">0</h3>
             </div>
         </header>
@@ -112,35 +118,39 @@
         <main class="main-panel card">
             <div class="dial">
                 <div class="dial-center" id="dial-total-ton">0t</div>
-                
+
                 <div class="dial-item" id="dial-coletado-mes">
-                    <p>Coletado/Mês</p> <h3 id="dial-val-coletado-mes">0t</h3>
+                    <p>Meta Mensal</p>
+                    <h3 id="dial-val-coletado-mes">0t</h3>
                 </div>
                 <div class="dial-item" id="dial-triado-mes">
-                    <p>Eficiência</p> <h3 id="dial-val-eficiencia">0%</h3>
+                    <p>Eficiência</p>
+                    <h3 id="dial-val-eficiencia">0%</h3>
                 </div>
                 <div class="dial-item" id="dial-coletado-dia">
-                    <p>Coletado/Dia</p> <h3 id="dial-val-coletado-dia">0t</h3>
+                    <p>Diário</p>
+                    <h3 id="dial-val-coletado-dia">0t</h3>
                 </div>
-                <!-- Equipe na Roleta -->
                 <div class="dial-item" id="dial-equipe">
-                    <p>Equipe Total</p> <h3 id="dial-val-equipe">0</h3>
+                    <p>Equipe</p>
+                    <h3 id="dial-val-equipe">0</h3>
                 </div>
             </div>
         </main>
 
         <aside class="sidebar">
             <div class="card team-stats">
-                <h4><i class="ph ph-users"></i> Quadro de Pessoal</h4>
+                <h4><i class="ph ph-users-three"></i> Quadro de Pessoal</h4>
                 <div id="team-list-container" class="team-grid"></div>
                 <div class="team-item total-row">
-                    <h5 id="team-total">0</h5> <p>TOTAL</p>
+                    <h5 id="team-total">0</h5>
+                    <p>TOTAL COLABORADORES</p>
                 </div>
             </div>
 
             <div class="card infra-stats">
-                <h4><i class="ph ph-wrench"></i> Equipamentos</h4>
-                 <div class="stat-row">
+                <h4><i class="ph ph-wrench"></i> Infraestrutura</h4>
+                <div class="stat-row">
                     <span>Caminhões</span> <span id="res-caminhoes">0</span>
                 </div>
                 <div class="stat-row">
@@ -159,11 +169,13 @@
     <!-- Overlay de Carregamento -->
     <div class="spinner-overlay" id="spinnerOverlay">
         <div class="pie-spinner">
-            <i class="ph ph-recycle recycle-symbol"></i>
+            <i class="ph ph-recycle"></i>
         </div>
-        <p style="margin-top: 20px; color: #fff;" id="spinnerText">Calculando...</p>
+        <p style="margin-top: 20px; color: #fff; font-size: 1.2rem; letter-spacing: 2px;" id="spinnerText">CALCULANDO...
+        </p>
     </div>
 
     <script src="app.js"></script>
 </body>
+
 </html>
