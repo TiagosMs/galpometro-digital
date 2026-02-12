@@ -4,26 +4,46 @@
     --bg-core: #050a07;
     --bg-gradient-start: #0a1f16;
     --bg-gradient-end: #000000;
-    
+
     --glass-surface: rgba(255, 255, 255, 0.03);
     --glass-border: rgba(255, 255, 255, 0.08);
     --glass-highlight: rgba(116, 238, 171, 0.1);
-    
+
     --primary: #00ff9d;
     --primary-glow: rgba(0, 255, 157, 0.4);
     --primary-dim: #00b871;
-    
+
     --text-main: #ffffff;
     --text-secondary: #94a3b8;
     --text-muted: #4e5d55;
-    
+
     --font-main: 'Outfit', sans-serif;
-    
+
     --radius-lg: 24px;
     --radius-md: 16px;
     --radius-sm: 8px;
-    
+
     --shadow-card: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+body.light-mode {
+    --bg-core: #f0f2f5;
+    --bg-gradient-start: #e0f7fa;
+    --bg-gradient-end: #ffffff;
+
+    --glass-surface: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --glass-highlight: rgba(0, 255, 157, 0.2);
+
+    --primary: #00b871;
+    --primary-glow: rgba(0, 184, 113, 0.3);
+    --primary-dim: #008f58;
+
+    --text-main: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+
+    --shadow-card: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
 }
 
 * {
@@ -35,7 +55,7 @@
 body {
     font-family: var(--font-main);
     background-color: var(--bg-core);
-    background-image: 
+    background-image:
         radial-gradient(circle at 10% 20%, rgba(0, 255, 157, 0.08) 0%, transparent 40%),
         radial-gradient(circle at 90% 80%, rgba(0, 150, 255, 0.05) 0%, transparent 40%);
     background-attachment: fixed;
@@ -49,7 +69,8 @@ body {
 }
 
 /* --- Layout Animations --- */
-.container, .dashboard {
+.container,
+.dashboard {
     width: 100%;
     max-width: 1200px;
     padding: 20px;
@@ -59,7 +80,8 @@ body {
     display: none;
 }
 
-.container.active, .dashboard.active {
+.container.active,
+.dashboard.active {
     display: block;
     opacity: 1;
     transform: translateY(0);
@@ -75,7 +97,8 @@ body {
 }
 
 /* --- Glassmorphism Card --- */
-.card, .form-wrapper {
+.card,
+.form-wrapper {
     background: var(--glass-surface);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -90,7 +113,10 @@ body {
 .card::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0; height: 1px;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
     background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
 }
 
@@ -109,6 +135,7 @@ body {
     font-size: 2.5rem;
     font-weight: 700;
     background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 10px;
@@ -156,7 +183,8 @@ body {
     margin-left: 4px;
 }
 
-.input-box input, .input-box select {
+.input-box input,
+.input-box select {
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-md);
@@ -173,7 +201,8 @@ body {
     color: #fff;
 }
 
-.input-box input:focus, .input-box select:focus {
+.input-box input:focus,
+.input-box select:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 4px rgba(0, 255, 157, 0.1);
     background: rgba(0, 0, 0, 0.4);
@@ -233,6 +262,31 @@ body {
     border-color: var(--text-secondary);
 }
 
+.btn-icon {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon:hover {
+    background: var(--glass-highlight);
+    transform: scale(1.1);
+}
+
+.theme-toggle-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
 /* --- Dashboard --- */
 .header-stats {
     grid-area: header;
@@ -243,7 +297,7 @@ body {
 }
 
 .stat-item {
-    background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
     border: 1px solid var(--glass-border);
     padding: 24px;
     border-radius: var(--radius-md);
@@ -290,25 +344,30 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: 
+    background:
         radial-gradient(circle at center, transparent 30%, rgba(0, 255, 157, 0.05) 60%, transparent 70%);
 }
 
 .dial::before {
     content: '';
     position: absolute;
-    width: 100%; height: 100%;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
     border: 2px dashed rgba(255, 255, 255, 0.1);
     animation: rotate 60s linear infinite;
 }
 
-@keyframes rotate { 100% { transform: rotate(360deg); } }
+@keyframes rotate {
+    100% {
+        transform: rotate(360deg);
+    }
+}
 
 .dial-center {
     width: 140px;
     height: 140px;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
     border-radius: 50%;
     border: 2px solid var(--primary);
@@ -330,12 +389,12 @@ body {
     border: 1px solid var(--glass-border);
     padding: 10px 20px;
     border-radius: var(--radius-sm);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-.dial-item p { 
-    font-size: 0.7rem; 
-    text-transform: uppercase; 
+.dial-item p {
+    font-size: 0.7rem;
+    text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--text-secondary);
     margin-bottom: 4px;
@@ -347,10 +406,21 @@ body {
 }
 
 /* Positioning Dial Items */
-#dial-coletado-mes { top: 10px; }
-#dial-triado-mes { bottom: 10px; }
-#dial-coletado-dia { left: -30px; }
-#dial-equipe { right: -30px; }
+#dial-coletado-mes {
+    top: 10px;
+}
+
+#dial-triado-mes {
+    bottom: 10px;
+}
+
+#dial-coletado-dia {
+    left: -30px;
+}
+
+#dial-equipe {
+    right: -30px;
+}
 
 
 /* Sidebar Stats */
@@ -379,7 +449,7 @@ body {
 }
 
 .team-item {
-    background: rgba(255,255,255,0.03);
+    background: rgba(255, 255, 255, 0.03);
     border-radius: var(--radius-sm);
     padding: 15px;
     text-align: center;
@@ -387,11 +457,20 @@ body {
 }
 
 .team-item:hover {
-    background: rgba(255,255,255,0.06);
+    background: rgba(255, 255, 255, 0.06);
 }
 
-.team-item h5 { font-size: 1.5rem; color: #fff; font-weight: 600; margin-bottom: 5px; }
-.team-item p { font-size: 0.8rem; color: var(--text-secondary); }
+.team-item h5 {
+    font-size: 1.5rem;
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.team-item p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
 
 .total-row {
     grid-column: 1 / -1;
@@ -415,7 +494,10 @@ body {
 /* Spinner Overlay */
 .spinner-overlay {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(5, 10, 7, 0.9);
     backdrop-filter: blur(5px);
     display: flex;
@@ -428,7 +510,10 @@ body {
     transition: 0.4s;
 }
 
-.spinner-overlay.show { visibility: visible; opacity: 1; }
+.spinner-overlay.show {
+    visibility: visible;
+    opacity: 1;
+}
 
 .pie-spinner {
     font-size: 4rem;
@@ -437,9 +522,20 @@ body {
 }
 
 @keyframes pulse-spin {
-    0% { transform: scale(1) rotate(0deg); opacity: 0.8; }
-    50% { transform: scale(1.1) rotate(180deg); opacity: 1; }
-    100% { transform: scale(1) rotate(360deg); opacity: 0.8; }
+    0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.1) rotate(180deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1) rotate(360deg);
+        opacity: 0.8;
+    }
 }
 
 @media (max-width: 900px) {
@@ -448,25 +544,30 @@ body {
         flex-direction: column;
         gap: 30px;
     }
-    
+
     .dial {
         width: 300px;
         height: 300px;
     }
-    
+
     .dial-item {
         position: relative;
-        top: auto !important; bottom: auto !important; left: auto !important; right: auto !important;
+        top: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        right: auto !important;
         transform: none !important;
         margin: 10px;
         width: 100%;
     }
-    
+
     .dial {
         flex-direction: column;
         background: none;
         height: auto;
     }
-    
-    .dial::before { display: none; }
+
+    .dial::before {
+        display: none;
+    }
 }

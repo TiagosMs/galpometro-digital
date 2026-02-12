@@ -1,6 +1,6 @@
 // --- 1. CONFIGURAÇÃO DO SUPABASE ---
-const SUPABASE_URL = 'https://dtrtrukejbazwvkbewlr.supabase.co'; 
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0cnRydWtlamJhend2a2Jld2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ4NzgwNDIsImV4cCI6MjA4MDQ1NDA0Mn0.Zwxv86iSCY1rTugtL7zIpnlXrOxtTypvlWxtUBS_7g0'; 
+const SUPABASE_URL = 'https://dtrtrukejbazwvkbewlr.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0cnRydWtlamJhend2a2Jld2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ4NzgwNDIsImV4cCI6MjA4MDQ1NDA0Mn0.Zwxv86iSCY1rTugtL7zIpnlXrOxtTypvlWxtUBS_7g0';
 
 const dbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -34,10 +34,10 @@ const IbgeService = {
         try {
             // URL da API de Agregados (Tabela 4714 = Censo 2022, Variável 93 = População)
             const url = `https://servicodados.ibge.gov.br/api/v3/agregados/4714/periodos/2022/variaveis/93?localidades=N6[${cityCode}]`;
-            
+
             const response = await fetch(url);
             const data = await response.json();
-            
+
             // O retorno é complexo, precisamos navegar até o valor
             const pop = data[0]?.resultados[0]?.series[0]?.serie['2022'];
             return pop;
@@ -52,33 +52,33 @@ const IbgeService = {
 class CalculatorEngine {
     constructor() {
         this.DB_SIMULATION = {
-            GENERATION_PER_CAPITA: 0.95, 
-            CATCH_RATE: 10,              
-            WORK_DAYS: 22,               
+            GENERATION_PER_CAPITA: 0.95,
+            CATCH_RATE: 10,
+            WORK_DAYS: 22,
             TRIPS_PER_DAY: 1, // Calibrado: 1 viagem
-            
+
             // Produtividade calibrada
-            SORTING_CAPACITY_PER_PERSON: 0.19, 
-            REJECT_RATE: 0.15, 
-            
+            SORTING_CAPACITY_PER_PERSON: 0.19,
+            REJECT_RATE: 0.15,
+
             // Ratios de Equipe
             PRESS_CAPACITY_DEFAULT: 8.0, // Predefinido (8 toneladas/dia)
-            PRESS_RATIO_PERSON: 1.5, 
-            HELPERS_PER_TRUCK: 2,       
+            PRESS_RATIO_PERSON: 1.5,
+            HELPERS_PER_TRUCK: 2,
             ADMIN_RATIO: 15, // Calibrado: 1 a cada 15         
-            DISPLACEMENT_RATIO: 3, 
-            FORKLIFT_RATIO: 15     
+            DISPLACEMENT_RATIO: 3,
+            FORKLIFT_RATIO: 15
         };
 
         this.TRUCK_SPECS = {
             'Compactador': { vol: 15, density: 250 },
-            'Bau':         { vol: 24, density: 60 },
-            'Gaiola':      { vol: 12, density: 50 }
+            'Bau': { vol: 24, density: 60 },
+            'Gaiola': { vol: 12, density: 50 }
         };
     }
 
     calculate(inputs) {
-        const D = this.DB_SIMULATION; 
+        const D = this.DB_SIMULATION;
         const truckSpec = this.TRUCK_SPECS[inputs.truckType] || this.TRUCK_SPECS['Compactador'];
 
         // --- CÁLCULOS ---
@@ -100,7 +100,7 @@ class CalculatorEngine {
         const pressOperators = Math.ceil(materialToPressTon / D.PRESS_RATIO_PERSON);
 
         const drivers = trucksCount;
-        const helpers = Math.ceil(trucksCount * D.HELPERS_PER_TRUCK); 
+        const helpers = Math.ceil(trucksCount * D.HELPERS_PER_TRUCK);
         const forkliftOperators = materialToPressTon > 0.5 ? Math.max(1, Math.ceil(materialToPressTon / D.FORKLIFT_RATIO)) : 0;
         const displacement = Math.ceil(sortersNeeded / D.DISPLACEMENT_RATIO);
 
@@ -146,29 +146,57 @@ class CalculatorEngine {
 
 // --- 4. CONTROLE DA INTERFACE ---
 const UI = {
-    elements: {
-        formSection: document.getElementById('input-section'),
-        dashboardSection: document.getElementById('dashboard-section'),
-        form: document.getElementById('simulation-form'),
-        spinner: document.getElementById('spinnerOverlay'),
-        spinnerText: document.getElementById('spinnerText'),
-        btnBack: document.getElementById('btn-back'),
-        teamList: document.getElementById('team-list-container'),
-        ufSelect: document.getElementById('ufSelect'),
-        citySelect: document.getElementById('citySelect'),
-        populationInput: document.getElementById('population')
-    },
-
     init() {
+        this.cacheDOM();
         this.calculator = new CalculatorEngine();
         this.addEventListeners();
         this.loadStates();
+        this.initTheme();
+    },
+
+    cacheDOM() {
+        this.elements = {
+            formSection: document.getElementById('input-section'),
+            dashboardSection: document.getElementById('dashboard-section'),
+            form: document.getElementById('simulation-form'),
+            spinner: document.getElementById('spinnerOverlay'),
+            spinnerText: document.getElementById('spinnerText'),
+            btnBack: document.getElementById('btn-back'),
+            teamList: document.getElementById('team-list-container'),
+            ufSelect: document.getElementById('ufSelect'),
+            citySelect: document.getElementById('citySelect'),
+            populationInput: document.getElementById('population'),
+            themeToggle: document.getElementById('theme-toggle')
+        };
+    },
+
+    initTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+            if (this.elements.themeToggle) {
+                this.elements.themeToggle.innerHTML = '<i class="ph ph-moon"></i>';
+            }
+        }
+    },
+
+    toggleTheme() {
+        console.log("Alternando tema...");
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+
+        if (this.elements.themeToggle) {
+            this.elements.themeToggle.innerHTML = isLight ? '<i class="ph ph-moon"></i>' : '<i class="ph ph-sun"></i>';
+        } else {
+            console.error("Botão de tema não encontrado!");
+        }
     },
 
     async loadStates() {
         this.elements.ufSelect.innerHTML = '<option value="">Carregando...</option>';
         const states = await IbgeService.getStates();
-        
+
         let options = '<option value="">Selecione o Estado</option>';
         states.forEach(state => {
             options += `<option value="${state.sigla}">${state.nome}</option>`;
@@ -179,14 +207,14 @@ const UI = {
     async loadCities(uf) {
         this.elements.citySelect.innerHTML = '<option value="">Carregando...</option>';
         this.elements.citySelect.disabled = true;
-        
+
         const cities = await IbgeService.getCities(uf);
-        
+
         let options = '<option value="">Selecione a Cidade</option>';
         cities.forEach(city => {
             options += `<option value="${city.id}">${city.nome}</option>`;
         });
-        
+
         this.elements.citySelect.innerHTML = options;
         this.elements.citySelect.disabled = false;
     },
@@ -194,14 +222,14 @@ const UI = {
     async loadPopulation(cityId) {
         this.elements.populationInput.placeholder = "Buscando IBGE...";
         this.elements.populationInput.value = "";
-        
+
         const pop = await IbgeService.getPopulation(cityId);
-        
+
         if (pop) {
             this.elements.populationInput.value = pop;
             this.elements.populationInput.style.backgroundColor = "#2f5c47";
             setTimeout(() => {
-                this.elements.populationInput.style.backgroundColor = ""; 
+                this.elements.populationInput.style.backgroundColor = "";
             }, 500);
         } else {
             this.elements.populationInput.placeholder = "Não encontrado. Digite manualmente.";
@@ -232,6 +260,8 @@ const UI = {
             console.log("Botão voltar clicado"); // Debug
             this.switchScreen('input');
         });
+
+        this.elements.themeToggle.addEventListener('click', () => this.toggleTheme());
     },
 
     async saveToDatabase(inputs, results) {
@@ -247,12 +277,12 @@ const UI = {
                     abrangencia: inputs.abrangencia,
                     tipo_caminhao: inputs.truckType,
                     capacidade_prensa_dia: 8.0, // Valor padrão fixo
-                    
+
                     taxa_captura: used.catchRate,
                     dias_trabalhados_mes: used.workDays,
                     vol_capacidade_caminhao: used.truckVol,
                     viagens_caminhao_dia: used.trips,
-                    
+
                     coleta_total_mes: results.production.monthlyCollection,
                     total_equipe: results.staff.total,
                     taxa_eficiencia: results.production.efficiency
@@ -271,7 +301,7 @@ const UI = {
                     qtd_empilhadeiras: results.infrastructure.forklift,
                     qtd_balancas: results.infrastructure.scales
                 }]);
-            
+
             if (errInfra) throw errInfra;
 
             alert(`Cenário salvo! ID: ${cenario.id}`);
@@ -291,7 +321,7 @@ const UI = {
 
         this.elements.spinner.classList.add('show');
         this.elements.spinnerText.innerText = "Calculando...";
-        
+
         const results = this.calculator.calculate(inputs);
         this.renderDashboard(results);
 
@@ -303,18 +333,18 @@ const UI = {
 
     renderDashboard(data) {
         document.getElementById('header-coletado').innerText = `${data.production.monthlyCollection.toFixed(0)}t`;
-        
+
         const popFormatada = data.inputs.population.toLocaleString('pt-BR');
         document.getElementById('header-pop-abr').innerText = `${popFormatada} (${data.inputs.abrangencia}%)`;
-        
-        document.getElementById('header-triado').innerText = `${(data.production.monthlyCollection * (data.production.efficiency/100)).toFixed(0)}t`;
+
+        document.getElementById('header-triado').innerText = `${(data.production.monthlyCollection * (data.production.efficiency / 100)).toFixed(0)}t`;
         document.getElementById('header-frota').innerText = data.infrastructure.trucks;
 
         document.getElementById('dial-total-ton').innerText = `${data.production.monthlyCollection.toFixed(0)}t`;
         document.getElementById('dial-val-coletado-mes').innerText = `${data.production.monthlyCollection.toFixed(1)}t`;
         document.getElementById('dial-val-eficiencia').innerText = `${data.production.efficiency.toFixed(0)}%`;
         document.getElementById('dial-val-coletado-dia').innerText = `${data.production.dailyCollection.toFixed(2)}t`;
-        
+
         document.getElementById('dial-val-equipe').innerText = data.staff.total;
 
         const teamMap = [
@@ -333,7 +363,7 @@ const UI = {
                 <p><i class="ph ${item.icon}"></i> ${item.label}</p>
             </div>
         `).join('');
-        
+
         document.getElementById('team-total').innerText = data.staff.total;
 
         document.getElementById('res-caminhoes').innerText = data.infrastructure.trucks;
