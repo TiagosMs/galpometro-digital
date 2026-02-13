@@ -1,8 +1,5 @@
 // --- 1. CONFIGURAÇÃO DO SUPABASE ---
-const SUPABASE_URL = 'https://dtrtrukejbazwvkbewlr.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0cnRydWtlamJhend2a2Jld2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ4NzgwNDIsImV4cCI6MjA4MDQ1NDA0Mn0.Zwxv86iSCY1rTugtL7zIpnlXrOxtTypvlWxtUBS_7g0';
-
-const dbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// (Removido por solicitação do usuário)
 
 // --- 2. SERVIÇO IBGE (API) ---
 const IbgeService = {
@@ -262,55 +259,26 @@ const UI = {
         });
 
         this.elements.themeToggle.addEventListener('click', () => this.toggleTheme());
+
+        // Tabs Logic
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons and contents
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                // Activate clicked button
+                btn.classList.add('active');
+
+                // Show corresponding content
+                const tabId = btn.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
     },
 
-    async saveToDatabase(inputs, results) {
-        console.log("Salvando...");
-        const used = results.defaultsUsed;
 
-        try {
-            const { data: cenario, error: errCenario } = await dbClient
-                .from('cenarios')
-                .insert([{
-                    nome_projeto: `Simulação ${new Date().toLocaleTimeString()}`,
-                    populacao: inputs.population,
-                    abrangencia: inputs.abrangencia,
-                    tipo_caminhao: inputs.truckType,
-                    capacidade_prensa_dia: 8.0, // Valor padrão fixo
-
-                    taxa_captura: used.catchRate,
-                    dias_trabalhados_mes: used.workDays,
-                    vol_capacidade_caminhao: used.truckVol,
-                    viagens_caminhao_dia: used.trips,
-
-                    coleta_total_mes: results.production.monthlyCollection,
-                    total_equipe: results.staff.total,
-                    taxa_eficiencia: results.production.efficiency
-                }])
-                .select()
-                .single();
-
-            if (errCenario) throw errCenario;
-
-            const { error: errInfra } = await dbClient
-                .from('requisitos_infraestrutura')
-                .insert([{
-                    cenario_id: cenario.id,
-                    qtd_caminhoes: results.infrastructure.trucks,
-                    qtd_prensas: results.infrastructure.presses,
-                    qtd_empilhadeiras: results.infrastructure.forklift,
-                    qtd_balancas: results.infrastructure.scales
-                }]);
-
-            if (errInfra) throw errInfra;
-
-            alert(`Cenário salvo! ID: ${cenario.id}`);
-
-        } catch (error) {
-            console.error("Erro:", error);
-            alert("Erro ao salvar: " + error.message);
-        }
-    },
 
     handleSimulation() {
         const inputs = {
@@ -325,10 +293,8 @@ const UI = {
         const results = this.calculator.calculate(inputs);
         this.renderDashboard(results);
 
-        this.saveToDatabase(inputs, results).then(() => {
-            this.elements.spinner.classList.remove('show');
-            this.switchScreen('dashboard');
-        });
+        this.elements.spinner.classList.remove('show');
+        this.switchScreen('dashboard');
     },
 
     renderDashboard(data) {

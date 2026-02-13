@@ -10,8 +10,7 @@
     <!-- Ícones -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <!-- Banco de Dados (Supabase) -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
 
 <body>
@@ -144,28 +143,41 @@
         </main>
 
         <aside class="sidebar">
-            <div class="card team-stats">
-                <h4><i class="ph ph-users-three"></i> Quadro de Pessoal</h4>
-                <div id="team-list-container" class="team-grid"></div>
-                <div class="team-item total-row">
-                    <h5 id="team-total">0</h5>
-                    <p>TOTAL COLABORADORES</p>
+            <div class="tabs-header">
+                <button class="tab-btn active" data-tab="tab-equipe">
+                    <i class="ph ph-users-three"></i> Equipe
+                </button>
+                <button class="tab-btn" data-tab="tab-infra">
+                    <i class="ph ph-wrench"></i> Infra
+                </button>
+            </div>
+
+            <div id="tab-equipe" class="tab-content active">
+                <div class="card team-stats">
+                    <h4><i class="ph ph-users-three"></i> Quadro de Pessoal</h4>
+                    <div id="team-list-container" class="team-grid"></div>
+                    <div class="team-item total-row">
+                        <h5 id="team-total">0</h5>
+                        <p>TOTAL COLABORADORES</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="card infra-stats">
-                <h4><i class="ph ph-wrench"></i> Infraestrutura</h4>
-                <div class="stat-row">
-                    <span>Caminhões</span> <span id="res-caminhoes">0</span>
-                </div>
-                <div class="stat-row">
-                    <span>Prensas</span> <span id="res-prensas">0</span>
-                </div>
-                <div class="stat-row">
-                    <span>Empilhadeiras</span> <span id="res-empilhadeiras">0</span>
-                </div>
-                <div class="stat-row">
-                    <span>Balanças</span> <span id="res-balancas">0</span>
+            <div id="tab-infra" class="tab-content">
+                <div class="card infra-stats">
+                    <h4><i class="ph ph-wrench"></i> Infraestrutura</h4>
+                    <div class="stat-row">
+                        <span>Caminhões</span> <span id="res-caminhoes">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Prensas</span> <span id="res-prensas">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Empilhadeiras</span> <span id="res-empilhadeiras">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Balanças</span> <span id="res-balancas">0</span>
+                    </div>
                 </div>
             </div>
         </aside>
