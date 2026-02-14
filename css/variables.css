@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+
+:root {
+    --bg-core: #050a07;
+    --bg-gradient-start: #0a1f16;
+    --bg-gradient-end: #000000;
+
+    --glass-surface: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-highlight: rgba(116, 238, 171, 0.1);
+
+    --bg-input: rgba(0, 0, 0, 0.2);
+
+    --primary: #00ff9d;
+    --primary-glow: rgba(0, 255, 157, 0.4);
+    --primary-dim: #00b871;
+
+    --text-main: #ffffff;
+    --text-secondary: #94a3b8;
+    --text-muted: #4e5d55;
+
+    --font-main: 'Outfit', sans-serif;
+
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 8px;
+
+    --shadow-card: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+body.light-mode {
+    --bg-core: #f0f2f5;
+    --bg-gradient-start: #e0f7fa;
+    --bg-gradient-end: #ffffff;
+
+    --glass-surface: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --glass-highlight: rgba(0, 255, 157, 0.2);
+
+    --bg-input: rgba(255, 255, 255, 0.8);
+
+    --primary: #00b871;
+    --primary-glow: rgba(0, 184, 113, 0.3);
+    --primary-dim: #008f58;
+
+    --text-main: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+
+    --shadow-card: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}

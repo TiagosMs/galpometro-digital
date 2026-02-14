@@ -3,7 +3,7 @@
 
 // --- 2. SERVIÇO IBGE (API) ---
 const IbgeService = {
-    // Busca lista de Estados
+    // Busca lista de Estados ed
     async getStates() {
         try {
             const response = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome');
