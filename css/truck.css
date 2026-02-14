@@ -1,0 +1,69 @@
+/* === Truck Interactive Selector === */
+
+.input-box.full-width {
+    grid-column: 1 / -1;
+}
+
+.truck-interactive {
+    width: 100%;
+    border-radius: var(--radius-md);
+    background: var(--bg-input);
+    border: 1px solid var(--glass-border);
+    padding: 16px 10px 10px;
+    transition: border-color 0.3s ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.truck-interactive:hover {
+    border-color: var(--primary);
+}
+
+.truck-scene {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.truck-svg {
+    width: 100%;
+    max-width: 360px;
+    height: auto;
+    display: block;
+}
+
+/* Handle hover effect via CSS */
+#truckDragHandle:hover rect {
+    opacity: 1;
+}
+
+#truckDragHandle:active rect {
+    fill: var(--primary);
+}
+
+/* Smooth transitions for SVG elements */
+#truckBodyRect,
+#truckBodyLine1,
+#truckBodyLine2,
+#truckWheelBack,
+#truckWheelBackInner,
+#handleHitArea,
+#truckVolumeText {
+    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Disable transitions during drag (toggled via JS class) */
+.truck-interactive.dragging #truckBodyRect,
+.truck-interactive.dragging #truckBodyLine1,
+.truck-interactive.dragging #truckBodyLine2,
+.truck-interactive.dragging #truckWheelBack,
+.truck-interactive.dragging #truckWheelBackInner,
+.truck-interactive.dragging #handleHitArea,
+.truck-interactive.dragging #truckVolumeText {
+    transition: none;
+}
+
+.truck-interactive.dragging #truckDragHandle line,
+.truck-interactive.dragging #handleHitArea {
+    transition: none;
+}

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galpômetro Digital | Planejamento de Resíduos</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/truck.css">
 
     <!-- Ícones -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -70,9 +71,67 @@
                             <label>Tipo de Caminhão</label>
                             <select id="truckType">
                                 <option value="Compactador">Compactador (15m³)</option>
-                                <option value="Bau">Caminhão Baú (24m³)</option>
+                                <option value="Bau" selected>Caminhão Baú (24m³)</option>
                                 <option value="Gaiola">Caminhão Gaiola (12m³)</option>
                             </select>
+                            <input type="hidden" id="customVolume" value="24">
+                        </div>
+
+                        <!-- Visualização Interativa do Caminhão -->
+                        <div class="input-box full-width">
+                            <label><i class="ph ph-arrows-horizontal"></i> Ajuste o Volume (arraste o baú)</label>
+                            <div class="truck-interactive" id="truckInteractive">
+                                <div class="truck-scene">
+                                    <!-- Caminhão SVG Minimalista -->
+                                    <svg id="truckSvg" viewBox="0 0 360 120" xmlns="http://www.w3.org/2000/svg"
+                                        class="truck-svg">
+                                        <!-- Sombra no chão -->
+                                        <ellipse cx="180" cy="108" rx="140" ry="6" fill="rgba(0,0,0,0.15)" />
+
+                                        <!-- Cabine -->
+                                        <rect x="10" y="35" width="60" height="55" rx="6" fill="var(--primary)" />
+                                        <!-- Janela -->
+                                        <rect x="18" y="42" width="28" height="22" rx="3"
+                                            fill="rgba(255,255,255,0.35)" />
+                                        <!-- Para-choque -->
+                                        <rect x="5" y="78" width="12" height="12" rx="2" fill="var(--primary-dim)" />
+
+                                        <!-- Baú (redimensionável) -->
+                                        <rect id="truckBodyRect" x="70" y="22" width="180" height="68" rx="4"
+                                            fill="var(--bg-input)" stroke="var(--glass-border)" stroke-width="1.5" />
+                                        <!-- Linhas decorativas no baú -->
+                                        <line id="truckBodyLine1" x1="130" y1="28" x2="130" y2="84"
+                                            stroke="var(--glass-border)" stroke-width="0.5" opacity="0.5" />
+                                        <line id="truckBodyLine2" x1="190" y1="28" x2="190" y2="84"
+                                            stroke="var(--glass-border)" stroke-width="0.5" opacity="0.5" />
+
+                                        <!-- Handle de arraste (na borda direita do baú) -->
+                                        <g id="truckDragHandle" cursor="ew-resize">
+                                            <rect id="handleHitArea" x="240" y="30" width="24" height="52" rx="4"
+                                                fill="var(--secondary)" opacity="0.9" />
+                                            <!-- Grip lines -->
+                                            <line x1="249" y1="45" x2="249" y2="69" stroke="rgba(255,255,255,0.6)"
+                                                stroke-width="1.5" stroke-linecap="round" />
+                                            <line x1="253" y1="45" x2="253" y2="69" stroke="rgba(255,255,255,0.6)"
+                                                stroke-width="1.5" stroke-linecap="round" />
+                                        </g>
+
+                                        <!-- Rodas -->
+                                        <circle cx="45" cy="95" r="13" fill="#222" stroke="#555" stroke-width="3" />
+                                        <circle cx="45" cy="95" r="4" fill="#777" />
+                                        <circle id="truckWheelBack" cx="210" cy="95" r="13" fill="#222" stroke="#555"
+                                            stroke-width="3" />
+                                        <circle id="truckWheelBackInner" cx="210" cy="95" r="4" fill="#777" />
+
+                                        <!-- Volume Label -->
+                                        <text id="truckVolumeText" x="160" y="62" text-anchor="middle"
+                                            fill="var(--text-muted)" font-size="14" font-weight="600"
+                                            font-family="var(--font-main)">
+                                            24m³
+                                        </text>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -96,8 +155,8 @@
         </div>
     </section>
 
-    <!-- TELA 2: DASHBOARD (Saída) -->
-    <section id="dashboard-section" class="dashboard hidden">
+    <!-- TELA 2: DASHBOARD - VISÃO GERAL -->
+    <section id="dashboard-section" class="dashboard-page hidden">
         <button id="btn-back" class="btn-back"><i class="ph ph-arrow-left"></i> Novo Cálculo</button>
 
         <header class="header-stats">
@@ -142,45 +201,57 @@
             </div>
         </main>
 
-        <aside class="sidebar">
-            <div class="tabs-header">
-                <button class="tab-btn active" data-tab="tab-equipe">
-                    <i class="ph ph-users-three"></i> Equipe
-                </button>
-                <button class="tab-btn" data-tab="tab-infra">
-                    <i class="ph ph-wrench"></i> Infra
-                </button>
-            </div>
+        <div class="page-nav">
+            <button class="btn-page" data-page="equipe-section">
+                <i class="ph ph-users-three"></i> Quadro de Pessoal
+            </button>
+            <button class="btn-page" data-page="infra-section">
+                <i class="ph ph-wrench"></i> Infraestrutura
+            </button>
+        </div>
+    </section>
 
-            <div id="tab-equipe" class="tab-content active">
-                <div class="card team-stats">
-                    <h4><i class="ph ph-users-three"></i> Quadro de Pessoal</h4>
-                    <div id="team-list-container" class="team-grid"></div>
-                    <div class="team-item total-row">
-                        <h5 id="team-total">0</h5>
-                        <p>TOTAL COLABORADORES</p>
-                    </div>
-                </div>
-            </div>
+    <!-- TELA 3: EQUIPE -->
+    <section id="equipe-section" class="dashboard-page hidden">
+        <button class="btn-back btn-back-page" data-page="dashboard-section"><i class="ph ph-arrow-left"></i> Voltar ao
+            Painel</button>
 
-            <div id="tab-infra" class="tab-content">
-                <div class="card infra-stats">
-                    <h4><i class="ph ph-wrench"></i> Infraestrutura</h4>
-                    <div class="stat-row">
-                        <span>Caminhões</span> <span id="res-caminhoes">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Prensas</span> <span id="res-prensas">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Empilhadeiras</span> <span id="res-empilhadeiras">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Balanças</span> <span id="res-balancas">0</span>
-                    </div>
-                </div>
+        <div class="page-title">
+            <h2><i class="ph ph-users-three"></i> Quadro de Pessoal</h2>
+        </div>
+
+        <div class="card team-stats">
+            <div id="team-list-container" class="team-grid"></div>
+            <div class="team-item total-row">
+                <h5 id="team-total">0</h5>
+                <p>TOTAL COLABORADORES</p>
             </div>
-        </aside>
+        </div>
+    </section>
+
+    <!-- TELA 4: INFRAESTRUTURA -->
+    <section id="infra-section" class="dashboard-page hidden">
+        <button class="btn-back btn-back-page" data-page="dashboard-section"><i class="ph ph-arrow-left"></i> Voltar ao
+            Painel</button>
+
+        <div class="page-title">
+            <h2><i class="ph ph-wrench"></i> Infraestrutura</h2>
+        </div>
+
+        <div class="card infra-stats">
+            <div class="stat-row">
+                <span>Caminhões</span> <span id="res-caminhoes">0</span>
+            </div>
+            <div class="stat-row">
+                <span>Prensas</span> <span id="res-prensas">0</span>
+            </div>
+            <div class="stat-row">
+                <span>Empilhadeiras</span> <span id="res-empilhadeiras">0</span>
+            </div>
+            <div class="stat-row">
+                <span>Balanças</span> <span id="res-balancas">0</span>
+            </div>
+        </div>
     </section>
 
     <!-- Overlay de Carregamento -->

@@ -78,13 +78,17 @@ class CalculatorEngine {
         const D = this.DB_SIMULATION;
         const truckSpec = this.TRUCK_SPECS[inputs.truckType] || this.TRUCK_SPECS['Compactador'];
 
+        // Use custom volume if provided, otherwise use spec
+        const truckVol = inputs.customVolume || truckSpec.vol;
+        const truckDensity = truckSpec.density;
+
         // --- CÁLCULOS ---
         const populacaoAtendida = inputs.population * (inputs.abrangencia / 100);
         const totalWasteGenerated = populacaoAtendida * D.GENERATION_PER_CAPITA;
         const dailyCollectionKg = totalWasteGenerated * (D.CATCH_RATE / 100);
         const monthlyCollectionTon = (dailyCollectionKg * D.WORK_DAYS) / 1000;
 
-        const truckCapacityKg = truckSpec.vol * truckSpec.density;
+        const truckCapacityKg = truckVol * truckDensity;
         let trucksNeededRaw = dailyCollectionKg / (truckCapacityKg * D.TRIPS_PER_DAY);
         const trucksCount = Math.max(1, Math.ceil(trucksNeededRaw));
 
@@ -149,12 +153,15 @@ const UI = {
         this.addEventListeners();
         this.loadStates();
         this.initTheme();
+        this.initTruckSelector();
     },
 
     cacheDOM() {
         this.elements = {
             formSection: document.getElementById('input-section'),
             dashboardSection: document.getElementById('dashboard-section'),
+            equipeSection: document.getElementById('equipe-section'),
+            infraSection: document.getElementById('infra-section'),
             form: document.getElementById('simulation-form'),
             spinner: document.getElementById('spinnerOverlay'),
             spinnerText: document.getElementById('spinnerText'),
@@ -260,20 +267,19 @@ const UI = {
 
         this.elements.themeToggle.addEventListener('click', () => this.toggleTheme());
 
-        // Tabs Logic
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        tabBtns.forEach(btn => {
+        // Page Navigation: Dashboard -> Equipe/Infra
+        document.querySelectorAll('.btn-page').forEach(btn => {
             btn.addEventListener('click', () => {
-                // Remove active class from all buttons and contents
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                const targetPage = btn.getAttribute('data-page');
+                this.switchPage('dashboard-section', targetPage);
+            });
+        });
 
-                // Activate clicked button
-                btn.classList.add('active');
-
-                // Show corresponding content
-                const tabId = btn.getAttribute('data-tab');
-                document.getElementById(tabId).classList.add('active');
+        // Back buttons on sub-pages
+        document.querySelectorAll('.btn-back-page').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetPage = btn.getAttribute('data-page');
+                this.switchPage(btn.closest('.dashboard-page').id, targetPage);
             });
         });
     },
@@ -281,10 +287,12 @@ const UI = {
 
 
     handleSimulation() {
+        const customVol = parseFloat(document.getElementById('customVolume').value);
         const inputs = {
             population: parseInt(document.getElementById('population').value),
             abrangencia: parseFloat(document.getElementById('abrangencia').value),
-            truckType: document.getElementById('truckType').value
+            truckType: document.getElementById('truckType').value,
+            customVolume: customVol || null
         };
 
         this.elements.spinner.classList.add('show');
@@ -339,11 +347,12 @@ const UI = {
     },
 
     switchScreen(screenName) {
-        // CORREÇÃO: Rola para o topo ao trocar de tela
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
+        // Hide all pages
+        document.querySelectorAll('.dashboard-page').forEach(p => p.classList.remove('active'));
+
         if (screenName === 'input') {
-            this.elements.dashboardSection.classList.remove('active');
             setTimeout(() => {
                 this.elements.formSection.classList.add('active');
             }, 300);
@@ -353,6 +362,188 @@ const UI = {
                 this.elements.dashboardSection.classList.add('active');
             }, 300);
         }
+    },
+
+    switchPage(fromId, toId) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const fromEl = document.getElementById(fromId);
+        const toEl = document.getElementById(toId);
+
+        if (fromEl) fromEl.classList.remove('active');
+        setTimeout(() => {
+            if (toEl) toEl.classList.add('active');
+        }, 300);
+    },
+
+    // --- SELETOR DE CAMINHÃO INTERATIVO (SVG) ---
+    initTruckSelector() {
+        const truckSelect = document.getElementById('truckType');
+        const customVolInput = document.getElementById('customVolume');
+        const container = document.getElementById('truckInteractive');
+        const svg = document.getElementById('truckSvg');
+
+        // SVG Elements
+        const bodyRect = document.getElementById('truckBodyRect');
+        const line1 = document.getElementById('truckBodyLine1');
+        const line2 = document.getElementById('truckBodyLine2');
+        const handle = document.getElementById('truckDragHandle');
+        const handleRect = document.getElementById('handleHitArea');
+        const wheelBack = document.getElementById('truckWheelBack');
+        const wheelBackInner = document.getElementById('truckWheelBackInner');
+        const volumeText = document.getElementById('truckVolumeText');
+
+        const gripLines = handle.querySelectorAll('line');
+
+        // Presets for dropdown selection
+        const PRESETS = {
+            'Gaiola': { vol: 12 },
+            'Compactador': { vol: 15 },
+            'Bau': { vol: 24 }
+        };
+
+        // Continuous range
+        const MIN_VOL = 10;
+        const MAX_VOL = 100;
+
+        const BODY_X = 70;
+        const MIN_W = 60;
+        const MAX_W = 270;
+
+        // Convert volume <-> SVG width (linear mapping)
+        const volToWidth = (vol) => {
+            const t = (vol - MIN_VOL) / (MAX_VOL - MIN_VOL);
+            return MIN_W + t * (MAX_W - MIN_W);
+        };
+        const widthToVol = (w) => {
+            const t = (w - MIN_W) / (MAX_W - MIN_W);
+            return Math.round(MIN_VOL + t * (MAX_VOL - MIN_VOL));
+        };
+
+        // Update all SVG positions based on body width
+        const updateSvgPositions = (w) => {
+            const rightEdge = BODY_X + w;
+
+            bodyRect.setAttribute('width', w);
+
+            const l1x = BODY_X + w * 0.33;
+            const l2x = BODY_X + w * 0.66;
+            line1.setAttribute('x1', l1x);
+            line1.setAttribute('x2', l1x);
+            line2.setAttribute('x1', l2x);
+            line2.setAttribute('x2', l2x);
+
+            handleRect.setAttribute('x', rightEdge - 12);
+            gripLines[0].setAttribute('x1', rightEdge - 3);
+            gripLines[0].setAttribute('x2', rightEdge - 3);
+            gripLines[1].setAttribute('x1', rightEdge + 1);
+            gripLines[1].setAttribute('x2', rightEdge + 1);
+
+            const wheelX = rightEdge - 30;
+            wheelBack.setAttribute('cx', wheelX);
+            wheelBackInner.setAttribute('cx', wheelX);
+
+            const textX = BODY_X + w / 2;
+            volumeText.setAttribute('x', textX);
+        };
+
+        // Set truck to a specific volume
+        const setVolume = (vol) => {
+            vol = Math.max(MIN_VOL, Math.min(MAX_VOL, vol));
+            const w = volToWidth(vol);
+            updateSvgPositions(w);
+            volumeText.textContent = `${vol}m³`;
+            customVolInput.value = vol;
+
+            // Check if volume matches a preset → select it, otherwise keep current
+            let matched = false;
+            for (const [key, spec] of Object.entries(PRESETS)) {
+                if (spec.vol === vol) {
+                    truckSelect.value = key;
+                    matched = true;
+                    break;
+                }
+            }
+            // No match — don't change dropdown (leave as-is)
+        };
+
+        // --- DROPDOWN -> SVG sync (presets) ---
+        truckSelect.addEventListener('change', () => {
+            const preset = PRESETS[truckSelect.value];
+            if (preset) {
+                setVolume(preset.vol);
+            }
+        });
+
+        // --- DRAG LOGIC (continuous) ---
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartWidth = 0;
+
+        const screenToSvgX = (screenX) => {
+            const pt = svg.createSVGPoint();
+            pt.x = screenX;
+            pt.y = 0;
+            const ctm = svg.getScreenCTM().inverse();
+            return pt.matrixTransform(ctm).x;
+        };
+
+        const startDrag = (clientX) => {
+            isDragging = true;
+            dragStartX = screenToSvgX(clientX);
+            dragStartWidth = parseFloat(bodyRect.getAttribute('width'));
+            container.classList.add('dragging');
+            document.body.style.cursor = 'ew-resize';
+        };
+
+        const moveDrag = (clientX) => {
+            if (!isDragging) return;
+            const currentX = screenToSvgX(clientX);
+            const dx = currentX - dragStartX;
+            let newW = dragStartWidth + dx;
+            newW = Math.max(MIN_W, Math.min(MAX_W, newW));
+
+            updateSvgPositions(newW);
+
+            // Update volume text continuously
+            const vol = widthToVol(newW);
+            volumeText.textContent = `${vol}m³`;
+            customVolInput.value = vol;
+        };
+
+        const endDrag = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            container.classList.remove('dragging');
+            document.body.style.cursor = '';
+
+            // Keep current position — no snapping
+            const currentW = parseFloat(bodyRect.getAttribute('width'));
+            const vol = widthToVol(currentW);
+            setVolume(vol);
+        };
+
+        // Mouse events
+        handle.addEventListener('mousedown', (e) => {
+            startDrag(e.clientX);
+            e.preventDefault();
+        });
+        document.addEventListener('mousemove', (e) => moveDrag(e.clientX));
+        document.addEventListener('mouseup', endDrag);
+
+        // Touch events
+        handle.addEventListener('touchstart', (e) => {
+            startDrag(e.touches[0].clientX);
+            e.preventDefault();
+        }, { passive: false });
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            moveDrag(e.touches[0].clientX);
+        }, { passive: false });
+        document.addEventListener('touchend', endDrag);
+
+        // Initial state from dropdown preset
+        const initialPreset = PRESETS[truckSelect.value];
+        if (initialPreset) setVolume(initialPreset.vol);
     }
 };
 

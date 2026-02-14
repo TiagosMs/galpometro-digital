@@ -26,6 +26,14 @@
     --radius-sm: 8px;
 
     --shadow-card: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+
+    --secondary: #3b82f6;
+
+    --space-xs: 8px;
+    --space-sm: 12px;
+    --space-md: 20px;
+    --space-lg: 30px;
+    --space-xl: 40px;
 }
 
 body.light-mode {
