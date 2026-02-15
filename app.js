@@ -1,6 +1,3 @@
-// --- 1. CONFIGURAÇÃO DO SUPABASE ---
-// (Removido por solicitação do usuário)
-
 // --- 2. SERVIÇO IBGE (API) ---
 const IbgeService = {
     // Busca lista de Estados ed
