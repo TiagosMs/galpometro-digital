@@ -1,6 +1,6 @@
-/* --- Dashboard Pages --- */
+/* --- Páginas do Dashboard --- */
 
-/* Header Stats */
+/* Estatísticas do Cabeçalho */
 .header-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -39,7 +39,7 @@
     letter-spacing: -0.5px;
 }
 
-/* Main Panel & Dial */
+/* Painel Principal & Dial */
 .main-panel {
     display: flex;
     justify-content: center;
@@ -116,7 +116,7 @@
     color: var(--primary);
 }
 
-/* Dial item positions */
+/* Posições dos itens do Dial */
 #dial-coletado-mes {
     top: 10px;
 }
@@ -133,7 +133,7 @@
     right: -30px;
 }
 
-/* Page Navigation Buttons */
+/* Botões de Navegação de Página */
 .page-nav {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -169,7 +169,7 @@
     color: var(--primary);
 }
 
-/* Page Titles */
+/* Títulos de Página */
 .page-title {
     margin-bottom: var(--space-lg);
 }
@@ -190,7 +190,7 @@
     border-radius: var(--radius-sm);
 }
 
-/* Team Stats */
+/* Estatísticas da Equipe */
 .team-stats {
     padding: var(--space-lg);
 }
@@ -232,7 +232,7 @@
     border: 1px solid var(--primary-dim);
 }
 
-/* Infra Stats */
+/* Estatísticas de Infraestrutura */
 .infra-stats {
     padding: var(--space-lg);
 }
@@ -254,7 +254,7 @@
     font-weight: 600;
 }
 
-/* Responsive */
+/* Responsivo */
 @media (max-width: 900px) {
     .header-stats {
         grid-template-columns: 1fr 1fr;

@@ -1,4 +1,4 @@
-/* === Truck Interactive Selector === */
+/* === Seletor Interativo de Caminhão === */
 
 .input-box.full-width {
     grid-column: 1 / -1;
@@ -32,7 +32,7 @@
     display: block;
 }
 
-/* Handle hover effect via CSS */
+/* Efeito hover no handle via CSS */
 #truckDragHandle:hover rect {
     opacity: 1;
 }
@@ -41,7 +41,7 @@
     fill: var(--primary);
 }
 
-/* Smooth transitions for SVG elements */
+/* Transições suaves para elementos SVG */
 #truckBodyRect,
 #truckBodyLine1,
 #truckBodyLine2,
@@ -52,7 +52,7 @@
     transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* Disable transitions during drag (toggled via JS class) */
+/* Desabilitar transições durante arraste (alternado via classe JS) */
 .truck-interactive.dragging #truckBodyRect,
 .truck-interactive.dragging #truckBodyLine1,
 .truck-interactive.dragging #truckBodyLine2,

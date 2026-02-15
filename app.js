@@ -52,7 +52,7 @@ class CalculatorEngine {
             GENERATION_PER_CAPITA: 0.95,
             CATCH_RATE: 10,
             WORK_DAYS: 22,
-            TRIPS_PER_DAY: 1, // Calibrado: 1 viagem
+            TRIPS_PER_DAY: 1, // Calibrado: 1 viagem por dia
 
             // Produtividade calibrada
             SORTING_CAPACITY_PER_PERSON: 0.19,
@@ -78,7 +78,7 @@ class CalculatorEngine {
         const D = this.DB_SIMULATION;
         const truckSpec = this.TRUCK_SPECS[inputs.truckType] || this.TRUCK_SPECS['Compactador'];
 
-        // Use custom volume if provided, otherwise use spec
+        // Usa volume personalizado se fornecido, senão usa a especificação
         const truckVol = inputs.customVolume || truckSpec.vol;
         const truckDensity = truckSpec.density;
 
@@ -261,13 +261,13 @@ const UI = {
             this.handleSimulation();
         });
         this.elements.btnBack.addEventListener('click', () => {
-            console.log("Botão voltar clicado"); // Debug
+            console.log("Botão voltar clicado"); // Depuração
             this.switchScreen('input');
         });
 
         this.elements.themeToggle.addEventListener('click', () => this.toggleTheme());
 
-        // Page Navigation: Dashboard -> Equipe/Infra
+        // Navegação de Páginas: Dashboard -> Equipe/Infra
         document.querySelectorAll('.btn-page').forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetPage = btn.getAttribute('data-page');
@@ -275,7 +275,7 @@ const UI = {
             });
         });
 
-        // Back buttons on sub-pages
+        // Botões de voltar nas sub-páginas
         document.querySelectorAll('.btn-back-page').forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetPage = btn.getAttribute('data-page');
@@ -349,7 +349,7 @@ const UI = {
     switchScreen(screenName) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        // Hide all pages
+        // Ocultar todas as páginas
         document.querySelectorAll('.dashboard-page').forEach(p => p.classList.remove('active'));
 
         if (screenName === 'input') {
@@ -382,7 +382,7 @@ const UI = {
         const container = document.getElementById('truckInteractive');
         const svg = document.getElementById('truckSvg');
 
-        // SVG Elements
+        // Elementos SVG
         const bodyRect = document.getElementById('truckBodyRect');
         const line1 = document.getElementById('truckBodyLine1');
         const line2 = document.getElementById('truckBodyLine2');
@@ -394,14 +394,14 @@ const UI = {
 
         const gripLines = handle.querySelectorAll('line');
 
-        // Presets for dropdown selection
+        // Predefinições para seleção no dropdown
         const PRESETS = {
             'Gaiola': { vol: 12 },
             'Compactador': { vol: 15 },
             'Bau': { vol: 24 }
         };
 
-        // Continuous range
+        // Faixa contínua
         const MIN_VOL = 10;
         const MAX_VOL = 100;
 
@@ -409,7 +409,7 @@ const UI = {
         const MIN_W = 60;
         const MAX_W = 270;
 
-        // Convert volume <-> SVG width (linear mapping)
+        // Converter volume <-> largura SVG (mapeamento linear)
         const volToWidth = (vol) => {
             const t = (vol - MIN_VOL) / (MAX_VOL - MIN_VOL);
             return MIN_W + t * (MAX_W - MIN_W);
@@ -419,7 +419,7 @@ const UI = {
             return Math.round(MIN_VOL + t * (MAX_VOL - MIN_VOL));
         };
 
-        // Update all SVG positions based on body width
+        // Atualizar todas as posições SVG baseado na largura do baú
         const updateSvgPositions = (w) => {
             const rightEdge = BODY_X + w;
 
@@ -446,7 +446,7 @@ const UI = {
             volumeText.setAttribute('x', textX);
         };
 
-        // Set truck to a specific volume
+        // Definir o caminhão para um volume específico
         const setVolume = (vol) => {
             vol = Math.max(MIN_VOL, Math.min(MAX_VOL, vol));
             const w = volToWidth(vol);
@@ -454,7 +454,7 @@ const UI = {
             volumeText.textContent = `${vol}m³`;
             customVolInput.value = vol;
 
-            // Check if volume matches a preset → select it, otherwise keep current
+            // Verificar se o volume corresponde a uma predefinição → selecioná-la, senão manter atual
             let matched = false;
             for (const [key, spec] of Object.entries(PRESETS)) {
                 if (spec.vol === vol) {
@@ -463,10 +463,10 @@ const UI = {
                     break;
                 }
             }
-            // No match — don't change dropdown (leave as-is)
+            // Sem correspondência — não alterar o dropdown (manter como está)
         };
 
-        // --- DROPDOWN -> SVG sync (presets) ---
+        // --- Sincronização DROPDOWN -> SVG (predefinições) ---
         truckSelect.addEventListener('change', () => {
             const preset = PRESETS[truckSelect.value];
             if (preset) {
@@ -474,7 +474,7 @@ const UI = {
             }
         });
 
-        // --- DRAG LOGIC (continuous) ---
+        // --- LÓGICA DE ARRASTE (contínuo) ---
         let isDragging = false;
         let dragStartX = 0;
         let dragStartWidth = 0;
@@ -504,7 +504,7 @@ const UI = {
 
             updateSvgPositions(newW);
 
-            // Update volume text continuously
+            // Atualizar texto do volume continuamente
             const vol = widthToVol(newW);
             volumeText.textContent = `${vol}m³`;
             customVolInput.value = vol;
@@ -516,13 +516,13 @@ const UI = {
             container.classList.remove('dragging');
             document.body.style.cursor = '';
 
-            // Keep current position — no snapping
+            // Manter posição atual — sem encaixe
             const currentW = parseFloat(bodyRect.getAttribute('width'));
             const vol = widthToVol(currentW);
             setVolume(vol);
         };
 
-        // Mouse events
+        // Eventos de mouse
         handle.addEventListener('mousedown', (e) => {
             startDrag(e.clientX);
             e.preventDefault();
@@ -530,7 +530,7 @@ const UI = {
         document.addEventListener('mousemove', (e) => moveDrag(e.clientX));
         document.addEventListener('mouseup', endDrag);
 
-        // Touch events
+        // Eventos de toque
         handle.addEventListener('touchstart', (e) => {
             startDrag(e.touches[0].clientX);
             e.preventDefault();
@@ -541,7 +541,7 @@ const UI = {
         }, { passive: false });
         document.addEventListener('touchend', endDrag);
 
-        // Initial state from dropdown preset
+        // Estado inicial a partir da predefinição do dropdown
         const initialPreset = PRESETS[truckSelect.value];
         if (initialPreset) setVolume(initialPreset.vol);
     }
