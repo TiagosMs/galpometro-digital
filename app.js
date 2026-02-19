@@ -159,6 +159,7 @@ const UI = {
             dashboardSection: document.getElementById('dashboard-section'),
             equipeSection: document.getElementById('equipe-section'),
             infraSection: document.getElementById('infra-section'),
+            plantaSection: document.getElementById('planta-section'),
             form: document.getElementById('simulation-form'),
             spinner: document.getElementById('spinnerOverlay'),
             spinnerText: document.getElementById('spinnerText'),
