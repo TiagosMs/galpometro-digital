@@ -1,6 +1,10 @@
-/* --- Páginas do Dashboard --- */
+/**
+ * dashboard.css — Estilos da tela de resultados.
+ * Inclui: cards de estatísticas, dial central, botões de navegação,
+ * grid de equipe, lista de infraestrutura e placeholders.
+ */
 
-/* Estatísticas do Cabeçalho */
+/* Cards de estatísticas no topo do dashboard */
 .header-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -9,19 +13,18 @@
 }
 
 .stat-item {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-    border: 1px solid var(--glass-border);
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
     padding: var(--space-md);
     border-radius: var(--radius-md);
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
-    transition: transform 0.3s;
+    transition: border-color 0.2s;
 }
 
 .stat-item:hover {
-    transform: translateY(-5px);
-    border-color: var(--primary-dim);
+    border-color: var(--primary-hover);
 }
 
 .stat-item p {
@@ -39,7 +42,7 @@
     letter-spacing: -0.5px;
 }
 
-/* Painel Principal & Dial */
+/* Painel principal com o dial circular */
 .main-panel {
     display: flex;
     justify-content: center;
@@ -48,6 +51,7 @@
     margin-bottom: var(--space-lg);
 }
 
+/* Dial — círculo central com indicadores ao redor */
 .dial {
     width: 400px;
     height: 400px;
@@ -56,8 +60,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background:
-        radial-gradient(circle at center, transparent 30%, rgba(0, 255, 157, 0.05) 60%, transparent 70%);
 }
 
 .dial::before {
@@ -66,24 +68,16 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    border: 2px dashed rgba(255, 255, 255, 0.1);
-    animation: rotate 60s linear infinite;
+    border: 1px dashed rgba(255, 255, 255, 0.06);
 }
 
-@keyframes rotate {
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
+/* Círculo central do dial (mostra tonelagem total) */
 .dial-center {
     width: 140px;
     height: 140px;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.4);
     border-radius: 50%;
     border: 2px solid var(--primary);
-    box-shadow: 0 0 30px var(--primary-glow);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -93,14 +87,14 @@
     z-index: 10;
 }
 
+/* Indicadores posicionados ao redor do dial */
 .dial-item {
     position: absolute;
     text-align: center;
     background: var(--bg-core);
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--surface-border);
     padding: var(--space-xs) var(--space-md);
     border-radius: var(--radius-sm);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .dial-item p {
@@ -116,7 +110,7 @@
     color: var(--primary);
 }
 
-/* Posições dos itens do Dial */
+/* Posições fixas dos 4 indicadores do dial */
 #dial-coletado-mes {
     top: 10px;
 }
@@ -133,42 +127,16 @@
     right: -30px;
 }
 
-/* Botões de Navegação de Página */
+/* Grid de botões de navegação (Equipe, Infra, Planta) */
 .page-nav {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: var(--space-md);
 }
 
-/* Card "Em Breve" */
-.coming-soon-card {
-    padding: var(--space-lg);
-    min-height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.coming-soon-content {
-    text-align: center;
-    animation: fadeInUp 0.6s ease;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 .btn-page {
-    background: var(--glass-surface);
-    border: 1px solid var(--glass-border);
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
     color: var(--text-main);
     padding: var(--space-md) var(--space-lg);
     border-radius: var(--radius-md);
@@ -180,14 +148,12 @@
     align-items: center;
     justify-content: center;
     gap: var(--space-sm);
-    transition: all 0.3s ease;
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .btn-page:hover {
-    background: var(--glass-highlight);
-    border-color: var(--primary-dim);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    background: var(--surface-hover);
+    border-color: var(--primary-hover);
 }
 
 .btn-page i {
@@ -195,7 +161,20 @@
     color: var(--primary);
 }
 
-/* Títulos de Página */
+/* Placeholder "Em Breve" (Planta do Galpão) */
+.coming-soon-card {
+    padding: var(--space-lg);
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.coming-soon-content {
+    text-align: center;
+}
+
+/* Títulos das sub-páginas */
 .page-title {
     margin-bottom: var(--space-lg);
 }
@@ -211,12 +190,12 @@
 
 .page-title h2 i {
     color: var(--primary);
-    background: rgba(0, 255, 157, 0.1);
+    background: var(--primary-soft);
     padding: var(--space-xs);
     border-radius: var(--radius-sm);
 }
 
-/* Estatísticas da Equipe */
+/* Grid de equipe (Quadro de Pessoal) */
 .team-stats {
     padding: var(--space-lg);
 }
@@ -233,7 +212,7 @@
     border-radius: var(--radius-sm);
     padding: var(--space-md);
     text-align: center;
-    transition: 0.2s;
+    transition: background 0.2s;
 }
 
 .team-item:hover {
@@ -252,13 +231,14 @@
     color: var(--text-secondary);
 }
 
+/* Linha de total (destaque verde) */
 .total-row {
     grid-column: 1 / -1;
-    background: var(--primary-glow);
-    border: 1px solid var(--primary-dim);
+    background: var(--primary-soft);
+    border: 1px solid var(--primary-hover);
 }
 
-/* Estatísticas de Infraestrutura */
+/* Lista de infraestrutura */
 .infra-stats {
     padding: var(--space-lg);
 }
@@ -267,7 +247,7 @@
     display: flex;
     justify-content: space-between;
     padding: var(--space-sm) 0;
-    border-bottom: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--surface-border);
     color: var(--text-secondary);
 }
 
@@ -280,15 +260,22 @@
     font-weight: 600;
 }
 
-/* Responsivo */
+/* ---- Responsivo ---- */
 @media (max-width: 900px) {
     .header-stats {
         grid-template-columns: 1fr 1fr;
     }
 
+    /* Em telas menores, o dial perde o layout circular */
     .dial {
         width: 300px;
-        height: 300px;
+        height: auto;
+        flex-direction: column;
+        background: none;
+    }
+
+    .dial::before {
+        display: none;
     }
 
     .dial-item {
@@ -299,16 +286,6 @@
         right: auto !important;
         margin: var(--space-xs);
         width: 100%;
-    }
-
-    .dial {
-        flex-direction: column;
-        background: none;
-        height: auto;
-    }
-
-    .dial::before {
-        display: none;
     }
 
     .page-nav {

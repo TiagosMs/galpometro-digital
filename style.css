@@ -1,4 +1,7 @@
-/* Ponto de Entrada Principal */
+/**
+ * style.css — Ponto de entrada dos estilos.
+ * Importa todos os módulos CSS na ordem correta.
+ */
 @import url('css/variables.css');
 @import url('css/base.css');
 @import url('css/layout.css');

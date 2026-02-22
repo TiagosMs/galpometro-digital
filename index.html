@@ -7,21 +7,18 @@
     <title>Galpômetro Digital | Planejamento de Resíduos</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="css/truck.css">
-
-    <!-- Ícones -->
+    <link rel="stylesheet" href="css/export.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-
 </head>
 
 <body>
 
-    <!-- TELA 1: FORMULÁRIO DE ENTRADA -->
     <div class="theme-toggle-container">
         <button id="theme-toggle" class="btn-icon" aria-label="Alternar Tema">
             <i class="ph ph-sun"></i>
         </button>
     </div>
+
     <section id="input-section" class="container active">
         <div class="form-wrapper card">
             <div class="form-header">
@@ -53,20 +50,17 @@
                     <h3><i class="ph ph-sliders-horizontal"></i> Parâmetros Operacionais</h3>
                     <div class="input-grid">
 
-                        <!-- 1. População (Automático via IBGE) -->
                         <div class="input-box">
                             <label>População (Censo 2022)</label>
                             <input type="number" id="population" min="1000" placeholder="Aguardando cidade..." required
                                 readonly style="opacity: 0.7; cursor: not-allowed;">
                         </div>
 
-                        <!-- 2. Abrangência -->
                         <div class="input-box">
                             <label>Abrangência da Coleta (%)</label>
                             <input type="number" id="abrangencia" min="1" max="100" value="80" required>
                         </div>
 
-                        <!-- 3. Tipo de Caminhão -->
                         <div class="input-box">
                             <label>Tipo de Caminhão</label>
                             <select id="truckType">
@@ -77,53 +71,36 @@
                             <input type="hidden" id="customVolume" value="24">
                         </div>
 
-                        <!-- Visualização Interativa do Caminhão -->
                         <div class="input-box full-width">
                             <label><i class="ph ph-arrows-horizontal"></i> Ajuste o Volume (arraste o baú)</label>
                             <div class="truck-interactive" id="truckInteractive">
                                 <div class="truck-scene">
-                                    <!-- Caminhão SVG Minimalista -->
                                     <svg id="truckSvg" viewBox="0 0 360 120" xmlns="http://www.w3.org/2000/svg"
                                         class="truck-svg">
-                                        <!-- Sombra no chão -->
                                         <ellipse cx="180" cy="108" rx="140" ry="6" fill="rgba(0,0,0,0.15)" />
-
-                                        <!-- Cabine -->
                                         <rect x="10" y="35" width="60" height="55" rx="6" fill="var(--primary)" />
-                                        <!-- Janela -->
                                         <rect x="18" y="42" width="28" height="22" rx="3"
                                             fill="rgba(255,255,255,0.35)" />
-                                        <!-- Para-choque -->
                                         <rect x="5" y="78" width="12" height="12" rx="2" fill="var(--primary-dim)" />
-
-                                        <!-- Baú (redimensionável) -->
                                         <rect id="truckBodyRect" x="70" y="22" width="180" height="68" rx="4"
-                                            fill="var(--bg-input)" stroke="var(--glass-border)" stroke-width="1.5" />
-                                        <!-- Linhas decorativas no baú -->
+                                            fill="var(--bg-input)" stroke="var(--surface-border)" stroke-width="1.5" />
                                         <line id="truckBodyLine1" x1="130" y1="28" x2="130" y2="84"
-                                            stroke="var(--glass-border)" stroke-width="0.5" opacity="0.5" />
+                                            stroke="var(--surface-border)" stroke-width="0.5" opacity="0.5" />
                                         <line id="truckBodyLine2" x1="190" y1="28" x2="190" y2="84"
-                                            stroke="var(--glass-border)" stroke-width="0.5" opacity="0.5" />
-
-                                        <!-- Handle de arraste (na borda direita do baú) -->
+                                            stroke="var(--surface-border)" stroke-width="0.5" opacity="0.5" />
                                         <g id="truckDragHandle" cursor="ew-resize">
                                             <rect id="handleHitArea" x="240" y="30" width="24" height="52" rx="4"
                                                 fill="var(--secondary)" opacity="0.9" />
-                                            <!-- Grip lines -->
                                             <line x1="249" y1="45" x2="249" y2="69" stroke="rgba(255,255,255,0.6)"
                                                 stroke-width="1.5" stroke-linecap="round" />
                                             <line x1="253" y1="45" x2="253" y2="69" stroke="rgba(255,255,255,0.6)"
                                                 stroke-width="1.5" stroke-linecap="round" />
                                         </g>
-
-                                        <!-- Rodas -->
                                         <circle cx="45" cy="95" r="13" fill="#222" stroke="#555" stroke-width="3" />
                                         <circle cx="45" cy="95" r="4" fill="#777" />
                                         <circle id="truckWheelBack" cx="210" cy="95" r="13" fill="#222" stroke="#555"
                                             stroke-width="3" />
                                         <circle id="truckWheelBackInner" cx="210" cy="95" r="4" fill="#777" />
-
-                                        <!-- Volume Label -->
                                         <text id="truckVolumeText" x="160" y="62" text-anchor="middle"
                                             fill="var(--text-muted)" font-size="14" font-weight="600"
                                             font-family="var(--font-main)">
@@ -155,7 +132,6 @@
         </div>
     </section>
 
-    <!-- TELA 2: DASHBOARD - VISÃO GERAL -->
     <section id="dashboard-section" class="dashboard-page hidden">
         <button id="btn-back" class="btn-back"><i class="ph ph-arrow-left"></i> Novo Cálculo</button>
 
@@ -212,9 +188,14 @@
                 <i class="ph ph-blueprint"></i> Planta do Galpão
             </button>
         </div>
+
+        <div class="export-trigger-container">
+            <button id="btn-export" class="btn-export-trigger">
+                <i class="ph ph-download-simple"></i> Exportar Relatório
+            </button>
+        </div>
     </section>
 
-    <!-- TELA 3: EQUIPE -->
     <section id="equipe-section" class="dashboard-page hidden">
         <button class="btn-back btn-back-page" data-page="dashboard-section"><i class="ph ph-arrow-left"></i> Voltar ao
             Painel</button>
@@ -232,7 +213,6 @@
         </div>
     </section>
 
-    <!-- TELA 4: INFRAESTRUTURA -->
     <section id="infra-section" class="dashboard-page hidden">
         <button class="btn-back btn-back-page" data-page="dashboard-section"><i class="ph ph-arrow-left"></i> Voltar ao
             Painel</button>
@@ -257,7 +237,6 @@
         </div>
     </section>
 
-    <!-- TELA 5: PLANTA DO GALPÃO -->
     <section id="planta-section" class="dashboard-page hidden">
         <button class="btn-back btn-back-page" data-page="dashboard-section"><i class="ph ph-arrow-left"></i> Voltar ao
             Painel</button>
@@ -276,7 +255,6 @@
         </div>
     </section>
 
-    <!-- Overlay de Carregamento -->
     <div class="spinner-overlay" id="spinnerOverlay">
         <div class="pie-spinner">
             <i class="ph ph-recycle"></i>
@@ -285,6 +263,44 @@
         </p>
     </div>
 
+    <div class="export-modal-overlay" id="exportModalOverlay">
+        <div class="export-modal">
+            <button class="export-modal-close" id="exportModalClose">
+                <i class="ph ph-x"></i>
+            </button>
+            <div class="export-modal-header">
+                <div class="export-modal-icon">
+                    <i class="ph ph-file-arrow-down"></i>
+                </div>
+                <h3>Exportar Relatório</h3>
+                <p>Escolha o formato para exportar os dados calculados</p>
+            </div>
+            <div class="export-options">
+                <button class="export-option-card" id="btn-export-pdf">
+                    <div class="export-option-icon pdf">
+                        <i class="ph ph-file-pdf"></i>
+                    </div>
+                    <div class="export-option-info">
+                        <h4>PDF</h4>
+                        <p>Relatório formatado com todos os dados</p>
+                    </div>
+                    <i class="ph ph-arrow-right export-option-arrow"></i>
+                </button>
+                <button class="export-option-card" id="btn-export-csv">
+                    <div class="export-option-icon csv">
+                        <i class="ph ph-file-csv"></i>
+                    </div>
+                    <div class="export-option-info">
+                        <h4>CSV</h4>
+                        <p>Planilha com dados brutos para análise</p>
+                    </div>
+                    <i class="ph ph-arrow-right export-option-arrow"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="pdf-template.js"></script>
     <script src="app.js"></script>
 </body>
 

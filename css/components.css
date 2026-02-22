@@ -1,10 +1,12 @@
-/* --- Cartão Glassmorphism --- */
+/**
+ * components.css — Componentes reutilizáveis (cards, formulário, botões).
+ */
+
+/* Card padrão — usado no formulário, equipe, infra, etc */
 .card,
 .form-wrapper {
-    background: var(--glass-surface);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-card);
     padding: var(--space-xl);
@@ -12,22 +14,13 @@
     overflow: hidden;
 }
 
-.card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
-}
-
-/* --- Estilos do Formulário --- */
+/* Formulário centralizado com largura máxima */
 .form-wrapper {
     max-width: 700px;
     margin: var(--space-xl) auto;
 }
 
+/* Cabeçalho do formulário (título + subtítulo) */
 .form-header {
     text-align: center;
     margin-bottom: var(--space-xl);
@@ -36,12 +29,13 @@
 .form-header h1 {
     font-size: 2.5rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-main);
     margin-bottom: 10px;
     letter-spacing: -1px;
+}
+
+.form-header h1 i {
+    color: var(--primary);
 }
 
 .form-header p {
@@ -49,6 +43,7 @@
     font-size: 1.1rem;
 }
 
+/* Títulos de seção dentro do formulário (ex: "Localização") */
 .form-group h3 {
     color: var(--primary);
     font-size: 1.2rem;
@@ -60,11 +55,12 @@
 }
 
 .form-group h3 i {
-    background: rgba(0, 255, 157, 0.1);
+    background: var(--primary-soft);
     padding: 8px;
     border-radius: 8px;
 }
 
+/* Grid de inputs (2 colunas em telas maiores) */
 .input-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -72,6 +68,7 @@
     margin-bottom: var(--space-lg);
 }
 
+/* Container de cada campo (label + input) */
 .input-box {
     display: flex;
     flex-direction: column;
@@ -85,17 +82,18 @@
     margin-left: 4px;
 }
 
+/* Inputs e selects */
 .input-box input,
 .input-box select {
     background: var(--bg-input);
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--surface-border);
     border-radius: var(--radius-md);
     padding: 14px 16px;
     color: var(--text-main);
     font-family: var(--font-main);
     font-size: 1rem;
     outline: none;
-    transition: all 0.3s ease;
+    transition: border-color 0.2s ease;
 }
 
 .input-box select option {
@@ -106,19 +104,19 @@
 .input-box input:focus,
 .input-box select:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(0, 255, 157, 0.1);
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.35);
 }
 
+/* Texto auxiliar abaixo de inputs */
 .hint {
     font-size: 0.8rem;
     color: var(--text-muted);
     margin-left: 4px;
 }
 
-/* Botão */
+/* Botão principal (ex: "Calcular Cenário") */
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dim) 100%);
+    background: var(--primary);
     color: #000;
     border: none;
     padding: 18px;
@@ -131,19 +129,17 @@
     align-items: center;
     justify-content: center;
     gap: var(--space-sm);
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px var(--primary-glow);
+    transition: background 0.2s ease;
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px var(--primary-glow);
-    filter: brightness(1.1);
+    background: var(--primary-hover);
 }
 
+/* Botão de voltar (transparente com borda) */
 .btn-back {
     background: transparent;
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--surface-border);
     color: var(--text-secondary);
     padding: 10px 20px;
     border-radius: var(--radius-sm);
@@ -159,34 +155,33 @@
 }
 
 .btn-back:hover {
-    background: var(--glass-surface);
-    color: #fff;
+    background: var(--surface);
+    color: var(--text-main);
     border-color: var(--text-secondary);
 }
 
+/* Botão circular (ícone) — usado no toggle de tema */
 .btn-icon {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--surface-border);
     color: var(--text-main);
     padding: 10px;
     border-radius: 50%;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .btn-icon:hover {
-    background: var(--glass-highlight);
-    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.12);
 }
 
+/* Posição fixa do botão de tema no canto superior direito */
 .theme-toggle-container {
     position: fixed;
     top: 20px;
     right: 20px;
     z-index: 1000;
 }
-
-/* Estilos de abas removidos — Equipe/Infra agora são páginas separadas */
